@@ -18,9 +18,26 @@ async function seed() {
   ]);
 
   const tickets = [];
-  while(tickets.length < 100){
+  while(tickets.length < 1000){
     tickets.push(Ticket.create({ movieId: godfather.id}));
   }
+
+  /*
+  let chain = Promise.resolve();
+
+  const inserted = [];
+
+  while(tickets.length){
+    const ticket = tickets.shift();
+    chain = chain.then(async()=> {
+      const insertedTicket = await Ticket.create(ticket)
+      inserted.push(insertedTicket);
+    });
+    
+  }
+
+  await chain; 
+  */
 
   const inserted = await Promise.all(tickets);
   console.log(inserted.map(ticket => ticket.id));

@@ -13,9 +13,24 @@ const Ticket = db.define('ticket', {
 }, {
   hooks: {
     afterCreate: async (ticket)=> {
+      /*
       const movie = await db.models.movie.findByPk(ticket.movieId);
+      console.log(movie.updatedAt);
       movie.ticketCount++; 
       await movie.save();
+      */
+      try {
+        await db.transaction({isolationLevel: Sequelize.Transaction.ISOLATION_LEVELS.REPEATABLE_READ}, async(t)=> {
+          console.log(t.id);
+          const movie = await db.models.movie.findByPk(ticket.movieId, { transaction: t});
+          console.log(t.id);
+          movie.ticketCount++; 
+          await movie.save({ transaction: t});
+        });
+      }
+      catch(ex){
+        console.log(ex.message);
+      }
     }
   }
 })
